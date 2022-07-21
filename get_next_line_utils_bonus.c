@@ -1,55 +1,67 @@
-#include "get_next_line_bonus.h"
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: donghyle <donghyle@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/21 12:15:41 by donghyle          #+#    #+#             */
+/*   Updated: 2022/07/21 12:15:42 by donghyle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-t_list	*create_list()
+#include "get_next_line_bonus.h"
+
+t_list	*create_list(void)
 {
 	t_list	*new_list;
+	size_t	size_struct;
 
-	new_list = (t_list *)malloc(sizeof(t_list));
+	size_struct = sizeof(t_list) + sizeof(t_fdbuffer) * LIST_SIZE;
+	new_list = (t_list *)malloc(size_struct);
 	if (!new_list)
 		return (NULL);
 	new_list->cap = LIST_SIZE;
 	new_list->len = 0;
-	new_list->data = (t_fdbuffer *)malloc(sizeof(t_fdbuffer) * LIST_SIZE);
-	if (!(new_list->data))
-	{
-		free(new_list);
-		return (NULL);
-	}
 	return (new_list);
 }
 
-int	append_list(t_list *list, t_fdbuffer new_data)
+int	append_list(t_list **list, t_fdbuffer new_data)
 {
-	t_fdbuffer	*temp;
-	int			i;
+	t_list	*temp;
+	size_t	size_struct;
+	int		i;
 
-	if (list->cap == list->len)
+	if ((*list)->cap == (*list)->len)
 	{
-		list->cap += LIST_SIZE;
-		temp = (t_fdbuffer *)malloc(sizeof(t_fdbuffer) * list->cap);
+		(*list)->cap += LIST_SIZE;
+		size_struct = sizeof(t_list) + sizeof(t_fdbuffer) * (*list)->cap;
+		temp = (t_list *)malloc(size_struct);
 		if (!temp)
 		{
-			list->cap -= LIST_SIZE;
+			(*list)->cap -= LIST_SIZE;
 			return (CODE_ERROR_MALLOC);
 		}
+		temp->len = (*list)->len;
+		temp->cap = (*list)->cap;
 		i = -1;
-		while (++i < list->len)
-			temp[i] = list->data[i];
-		free(list->data);
-		list->data = temp;
+		while (++i < (*list)->len)
+			temp->arr[i] = (*list)->arr[i];
+		free(*list);
+		*list = temp;
 	}
-	list->data[list->len] = new_data;
-	list->len++;
+	(*list)->arr[(*list)->len] = new_data;
+	(*list)->len++;
 	return (CODE_OK);
 }
 
-char	*ft_strchr(const char *str, int c)
+char	*ft_strchr(const char *s, int c)
 {
 	char	*cursor;
 
-	cursor = (char *)str;
-	while (*cursor)
+	cursor = (char *) s;
+	c = (int)(char) c;
+	while (*cursor != '\0')
 	{
 		if (*cursor == c)
 			return (cursor);
@@ -57,31 +69,32 @@ char	*ft_strchr(const char *str, int c)
 	}
 	if (c == '\0')
 		return (cursor);
-	return (NULL);
+	else
+		return (NULL);
 }
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
+	size_t	len_s;
 	size_t	i;
-	size_t	j;
-	char	*str;
+	char	*substr;
 
-	str = (char *)malloc(sizeof(*s) * (len + 1));
-	if (!str)
+	len_s = ft_strchr(s, '\0') - s;
+	if ((size_t) start >= len_s)
+		len = 0;
+	else if (len_s - (size_t) start < len)
+		len = len_s - (size_t) start;
+	substr = (char *)malloc(sizeof(char) * (len + 1));
+	if (!substr)
 		return (NULL);
 	i = 0;
-	j = 0;
-	while (s[i])
+	while (i < len)
 	{
-		if (i >= start && j < len)
-		{
-			str[j] = s[i];
-			j++;
-		}
+		substr[i] = (s + start)[i];
 		i++;
 	}
-	str[j] = '\0';
-	return (str);
+	substr[len] = '\0';
+	return (substr);
 }
 
 char	*ft_split_at(char **buf_prev)
@@ -96,15 +109,10 @@ char	*ft_split_at(char **buf_prev)
 	if (!ptr_nl)
 		return (NULL);
 	len_line = ptr_nl - *buf_prev + 1;
-	len_prev = 0;
-	while ((*buf_prev)[len_prev])
-		len_prev++;
+	len_prev = ft_strchr(*buf_prev, '\0') - *buf_prev;
 	line = ft_substr(*buf_prev, 0, len_line);
-	if (!line)
-		return (NULL);
 	temp = ft_substr(*buf_prev, len_line, len_prev - len_line);
 	free(*buf_prev);
 	*buf_prev = temp;
-	// printf(">>> ft_split_at: buf_prev: %p: \"%s\"\n", *buf_prev, *buf_prev);
 	return (line);
 }

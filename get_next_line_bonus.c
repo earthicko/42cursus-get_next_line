@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: donghyle <donghyle@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/21 12:15:35 by donghyle          #+#    #+#             */
+/*   Updated: 2022/07/21 12:15:37 by donghyle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line_bonus.h"
 #include <unistd.h>
-#include <stdio.h>
 
 static char	*handle_eof(char **buf_prev)
 {
-	// printf(">>> handle eof\n");
 	char	*line;
 
 	if (*buf_prev == NULL)
@@ -23,16 +33,14 @@ static char	*handle_eof(char **buf_prev)
 	}
 }
 
-static int	handle_read_buf(char **buf_prev, char *buf_curr, int stat)
+static int	handle_read_buf(char **buf_prev, char *buf_curr)
 {
 	char	*temp;
 	size_t	i;
 	size_t	j;
 
-	i = -1;
-	j = -1;
-	while ((*buf_prev)[++i]);
-	while (buf_curr[++j]);
+	i = ft_strchr(*buf_prev, '\0') - *buf_prev;
+	j = ft_strchr(buf_curr, '\0') - buf_curr;
 	temp = (char *)malloc(sizeof(char) * (i + j + 1));
 	if (!temp)
 	{
@@ -60,8 +68,8 @@ static int	init_fdbuffer(int fd, char ***ptr_buf_prev, t_list **buffers)
 	i = -1;
 	while (++i < (*buffers)->len)
 	{
-		if ((*buffers)->data[i].fd == fd)
-			break;
+		if ((*buffers)->arr[i].fd == fd)
+			break ;
 	}
 	if (i == (*buffers)->len)
 	{
@@ -70,14 +78,13 @@ static int	init_fdbuffer(int fd, char ***ptr_buf_prev, t_list **buffers)
 			return (CODE_ERROR_MALLOC);
 		new_buf.buf[0] = '\0';
 		new_buf.fd = fd;
-		// printf(">>> init_fdbuffer: created buf %p fd %d\n", new_buf.buf, new_buf.fd);
-		if (append_list(*buffers, new_buf) < 0)
+		if (append_list(buffers, new_buf) < 0)
 		{
 			free(new_buf.buf);
 			return (CODE_ERROR_MALLOC);
 		}
 	}
-	*ptr_buf_prev = &((*buffers)->data[i].buf);
+	*ptr_buf_prev = &((*buffers)->arr[i].buf);
 	return (CODE_OK);
 }
 
@@ -87,7 +94,6 @@ static int	init_get_next_line(int fd, char ***ptr_buf_prev, t_list **buffers)
 		return (CODE_ERROR_SCOPE);
 	if (!(*buffers))
 	{
-		// printf(">>> init_get_next_line: no t_list found, creating\n");
 		*buffers = create_list();
 		if (!(*buffers))
 			return (CODE_ERROR_MALLOC);
@@ -113,13 +119,11 @@ char	*get_next_line(int fd)
 
 	if (init_get_next_line(fd, &ptr_buf_prev, &buffers) < 0)
 		return (NULL);
-	// printf(">>> get_next_line: fd %d buf %p: \"%s\"\n", fd, *ptr_buf_prev, *ptr_buf_prev);
 	while (1)
 	{
 		if (ft_strchr(*ptr_buf_prev, '\n'))
 			return (ft_split_at(ptr_buf_prev));
 		stat = read(fd, buf_curr, BUFFER_SIZE);
-		// printf(">>> get_next_line: stat %d, buf \"%s\"\n", stat, buf_curr);
 		if (stat < 0)
 		{
 			free(*ptr_buf_prev);
@@ -129,7 +133,7 @@ char	*get_next_line(int fd)
 		if (stat == 0)
 			return (handle_eof(ptr_buf_prev));
 		buf_curr[stat] = '\0';
-		if (handle_read_buf(ptr_buf_prev, buf_curr, stat) < 0)
+		if (handle_read_buf(ptr_buf_prev, buf_curr) < 0)
 			return (NULL);
 	}
 }

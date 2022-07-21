@@ -1,5 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: donghyle <donghyle@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/21 12:15:32 by donghyle          #+#    #+#             */
+/*   Updated: 2022/07/21 12:15:34 by donghyle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 #include <unistd.h>
+#include <stdio.h>
 
 static char	*handle_eof(char **buf_prev)
 {
@@ -64,9 +77,9 @@ static int	init_get_next_line(int fd, char **buf_prev)
 char	*get_next_line(int fd)
 {
 	static char	*buf_prev;
-	char	buf_curr[BUFFER_SIZE + 1];
-	char	*ptr_nl;
-	int		stat;
+	char		buf_curr[BUFFER_SIZE + 1];
+	char		*ptr_nl;
+	int			stat;
 
 	if (init_get_next_line(fd, &buf_prev) < 0)
 		return (NULL);
