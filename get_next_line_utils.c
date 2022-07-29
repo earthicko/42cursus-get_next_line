@@ -12,14 +12,14 @@
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen(const char *str)
 {
-	size_t	i;
+	size_t	len;
 
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
+	len = 0;
+	while (str[len] != '\0')
+		len++;
+	return (len);
 }
 
 char	*ft_strchr(const char *str, int c)
@@ -40,51 +40,53 @@ char	*ft_strchr(const char *str, int c)
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
+	size_t	len_s;
 	size_t	i;
-	size_t	j;
-	char	*str;
+	char	*substr;
 
-	str = (char *)malloc(sizeof(*s) * (len + 1));
-	if (!str)
+	len_s = ft_strlen(s);
+	if ((size_t) start >= len_s)
+		len = 0;
+	else if (len_s - (size_t) start < len)
+		len = len_s - (size_t) start;
+	substr = (char *)malloc(sizeof(char) * (len + 1));
+	if (!substr)
 		return (NULL);
 	i = 0;
-	j = 0;
-	while (s[i])
+	while (i < len)
 	{
-		if (i >= start && j < len)
-		{
-			str[j] = s[i];
-			j++;
-		}
+		substr[i] = (s + start)[i];
 		i++;
 	}
-	str[j] = '\0';
-	return (str);
+	substr[len] = '\0';
+	return (substr);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	int		i;
-	int		j;
-	char	*str;
+	size_t	i;
+	size_t	len_1;
+	size_t	len_2;
+	char	*joined;
 
-	i = 0;
-	j = 0;
-	str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (str == NULL)
+	len_1 = ft_strlen(s1);
+	len_2 = ft_strlen(s2);
+	joined = (char *)malloc(sizeof(char) * (len_1 + len_2 + 1));
+	if (!joined)
 		return (NULL);
-	while (s1[i] != '\0')
+	i = 0;
+	while (i < len_1)
 	{
-		str[i] = s1[i];
+		joined[i] = s1[i];
 		i++;
 	}
-	while (s2[j] != '\0')
+	while (i < len_1 + len_2)
 	{
-		str[i + j] = s2[j];
-		j++;
+		joined[i] = s2[i - len_1];
+		i++;
 	}
-	str[i + j] = '\0';
-	return (str);
+	joined[i] = '\0';
+	return (joined);
 }
 
 char	*ft_split_at(char **buf_prev, char *ptr_nl)
