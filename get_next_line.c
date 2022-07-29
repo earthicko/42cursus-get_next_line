@@ -12,7 +12,6 @@
 
 #include "get_next_line.h"
 #include <unistd.h>
-#include <stdio.h>
 
 static char	*handle_eof(char **buf_prev, char **buf_curr)
 {
