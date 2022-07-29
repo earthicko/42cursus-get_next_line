@@ -32,6 +32,13 @@ typedef struct s_list
 	int			cap;
 	t_fdbuffer	arr[0];
 }	t_list;
+typedef struct s_linereader
+{
+	t_list	*buffers;
+	char	**ptr_buf_prev;
+	char	*buf_curr;
+	int		stat;
+}	t_linereader;
 char	*get_next_line(int fd);
 t_list	*create_list(void);
 int		append_list(t_list **list, t_fdbuffer new_data);
