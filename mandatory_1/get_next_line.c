@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-char	*ft_read_line(int fd, char *buff_stored, char *buff_read)
+static char	*read_line(int fd, char *buff_stored, char *buff_read)
 {
 	int		file_len;
 	char	*temp;
@@ -26,7 +26,7 @@ char	*ft_read_line(int fd, char *buff_stored, char *buff_read)
 	return (buff_stored);
 }
 
-char	*ft_define_line(char *buff)
+static char	*extract_line(char *buff)
 {
 	char	*new;
 	int		i;
@@ -51,9 +51,38 @@ char	*ft_define_line(char *buff)
 	return (new);
 }
 
+static char	*update_buff(char *buff)
+{
+	size_t	len;
+	size_t	i;
+	char	*new_buff;
+
+	len = 0;
+	i = 0;
+	while (buff[i] != '\n' && buff[i] != '\0')
+		i++;
+	if (!buff[i])
+	{
+		free(buff);
+		return (NULL);
+	}
+	new_buff = (char *)malloc((ft_strchr(buff, '\0') - buff) - i + 1);
+	if (!new_buff)
+	{
+		free(buff);
+		return (NULL);
+	}
+	i++;
+	while (buff[i] != '\0')
+		new_buff[len++] = buff[i++];
+	new_buff[len] = '\0';
+	free(buff);
+	return (new_buff);
+}
+
 char	*get_next_line(int fd)
 {
-	char		*new;
+	char		*new_line;
 	char		*buff_read;
 	static char	*buff_stored;
 
@@ -69,11 +98,11 @@ char	*get_next_line(int fd)
 	buff_read = (char *) malloc ((sizeof(char) * BUFFER_SIZE + 1));
 	if (!buff_read)
 		return (NULL);
-	buff_stored = ft_read_line(fd, buff_stored, buff_read);
+	buff_stored = read_line(fd, buff_stored, buff_read);
 	free(buff_read);
 	if (!buff_stored)
 		return (NULL);
-	new = ft_define_line(buff_stored);
-	buff_stored = ft_new_buff(buff_stored);
-	return (new);
+	new_line = extract_line(buff_stored);
+	buff_stored = update_buff(buff_stored);
+	return (new_line);
 }

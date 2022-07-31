@@ -42,32 +42,3 @@ char	*ft_strjoin(char *s1, char *s2)
 	free (s1);
 	return (joined);
 }
-
-char	*ft_new_buff(char *buff)
-{
-	size_t	len;
-	size_t	i;
-	char	*tmp;
-
-	len = 0;
-	i = 0;
-	while (buff[i] != '\n' && buff[i] != '\0')
-		i++;
-	if (!buff[i])
-	{
-		free(buff);
-		return (NULL);
-	}
-	tmp = (char *)malloc((ft_strchr(buff, '\0') - buff) - i + 1);
-	if (!tmp)
-	{
-		free(buff);
-		return (NULL);
-	}
-	i++;
-	while (buff[i] != '\0')
-		tmp[len++] = buff[i++];
-	tmp[len] = '\0';
-	free(buff);
-	return (tmp);
-}
