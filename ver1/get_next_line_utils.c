@@ -39,6 +39,5 @@ char	*ft_strjoin(char *s1, char *s2)
 	while (s2[j] != '\0')
 		joined[i++] = s2[j++];
 	joined[i] = '\0';
-	free (s1);
 	return (joined);
 }

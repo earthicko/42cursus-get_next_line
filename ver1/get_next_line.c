@@ -16,11 +16,9 @@ static char	*read_line(int fd, char *buff_stored, char *buff_read)
 		}
 		buff_read[file_len] = '\0';
 		temp = ft_strjoin(buff_stored, buff_read);
+		free(buff_stored);
 		if (!temp)
-		{
-			free(buff_stored);
 			return (NULL);
-		}
 		buff_stored = temp;
 	}
 	return (buff_stored);
@@ -36,7 +34,7 @@ static char	*extract_line(char *buff)
 		return (NULL);
 	while (buff[i] != '\n' && buff[i] != '\0')
 		i++;
-	new = (char *) malloc (sizeof(char) * (i + 2));
+	new = (char *)malloc(i + 2);
 	if (!new)
 		return (NULL);
 	i = 0;
@@ -95,7 +93,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		buff_stored[0] = '\0';
 	}
-	buff_read = (char *) malloc ((sizeof(char) * BUFFER_SIZE + 1));
+	buff_read = (char *)malloc(BUFFER_SIZE + 1);
 	if (!buff_read)
 		return (NULL);
 	buff_stored = read_line(fd, buff_stored, buff_read);
