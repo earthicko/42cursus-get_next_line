@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: donghyle <donghyle@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/09 18:08:45 by donghyle          #+#    #+#             */
+/*   Updated: 2022/08/09 18:08:46 by donghyle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 char	*ft_strchr(char *s, int c)
@@ -31,7 +43,6 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	len_joined = (ft_strchr(s1, '\0') - s1) + (ft_strchr(s2, '\0') - s2) + 1;
 	joined = (char *)malloc(len_joined);
-	printf("malloc %p (joined) from ft_strjoin\n", joined);
 	if (joined == NULL)
 		return (NULL);
 	while (s1[j] != '\0')
