@@ -25,9 +25,9 @@
 
 typedef struct s_list
 {
-	int				fd;
-	char			*buff;
-	struct s_list	*next;
+	int				fd;		// 이 노드가 담당하는 fd
+	char			*buff;	// 해당 fd에서 읽은 내용의 버퍼
+	struct s_list	*next;	// 다음 노드
 }					t_list;
 
 char	*get_next_line(int fd);
